@@ -10,10 +10,12 @@ import qs from 'qs';
 global.Buffer = require('buffer').Buffer;
 import { Audio } from 'expo-av';
 import { useLocalSearchParams } from "expo-router";
+import moment from 'moment'
 
 export default function SongDisplay() {
   const songList = require("@/public/songs/songs.json");
   const [token, setToken] = useState(null);
+  const displayDate= moment().format('MMMM Do YYYY, h:mm:ss a');
 
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [song, setSong] = useState(null);
@@ -130,6 +132,9 @@ export default function SongDisplay() {
             source={{ uri: song?.album?.images?.[0].url }}
             style={styles.albumArt}
           />
+           <ThemedView style={styles.stepContainer}>
+            <ThemedText style={styles.time}>{displayDate}</ThemedText>
+          </ThemedView>
         </ThemedView>
       )}
 
@@ -177,5 +182,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 200,
     width: 200,
+  },
+  time: {
+    marginTop: 10,
+    fontSize: 20,
+    fontWeight: 'bold'
   },
 });
