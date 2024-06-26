@@ -8,10 +8,10 @@ import { useEffect, useState, useRef } from "react";
 import { Audio } from "expo-av";
 import useSpotify from "@/hooks/useSpotify";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function SongDisplay() {
-  const songList = require("@/assets/songs/songs.json");
+  const songList = require("@/public/songs/songs.json");
 
   const { fob_id } = useLocalSearchParams();
 
@@ -21,18 +21,18 @@ export default function SongDisplay() {
   const { refreshToken, setSpotifySong, song } = useSpotify();
 
   useEffect(() => {
-    setSelectedPerson(
-      songList.find((person) => {
-        return person.id == fob_id;
-      })
-    );
+    const foundUser = songList.find((person) => {
+      return person.id == fob_id;
+    });
+    if (!foundUser) {
+      router.push({ pathname: "/Create", params: { fob_id } });
+    }
+    setSelectedPerson(foundUser);
     refreshToken(
       "d99c18fbd8354e78b92d5d46b09c103e",
       "17a84693860e4e5790443a25d089b737"
     );
   }, []);
-
-  console.log(selectedPerson);
 
   const [sound, setSound] = useState();
 
