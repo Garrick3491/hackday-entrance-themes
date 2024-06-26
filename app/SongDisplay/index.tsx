@@ -8,7 +8,7 @@ import { useEffect, useState, useRef } from "react";
 import { Audio } from "expo-av";
 import useSpotify from "@/hooks/useSpotify";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import moment from "moment";
 
 export default function SongDisplay() {
