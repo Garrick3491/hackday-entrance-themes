@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Pressable } from 'react-native';
+import { Image, StyleSheet, Platform, Pressable, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -50,8 +50,9 @@ export default function SongDisplay() {
 
   async function playSound() {
     console.log('Loading Sound');
+
     const { sound } = await Audio.Sound.createAsync({ uri: song.preview_url });
-    console.log('sound:%o', sound);
+
     setSound(sound);
 
     console.log('Playing Sound');
@@ -70,7 +71,7 @@ export default function SongDisplay() {
   useEffect(() => {
     if (selectedPerson && token) {
       const id = selectedPerson?.song?.split("/").pop();
-      console.log('id:%o', id);
+
       axios
         .get(`https://api.spotify.com/v1/tracks/${id}/`, {
           params: {
@@ -100,6 +101,7 @@ export default function SongDisplay() {
       play();
     }
   }, [song]);
+  console.log('song:%o', song);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -109,22 +111,29 @@ export default function SongDisplay() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        {/* <ThemedText type="title">Hello {selectedSong?.name}</ThemedText> */}
-      </ThemedView>
-      <ThemedView style={styles.subtitleContainer}>
-        <ThemedText>Entrance Theme: SONG INFORMATION</ThemedText>
-      </ThemedView>
-      {songList.map((person) => (
-        <Pressable key={person.name} onPress={() => {
-          setSelectedPerson(person);
-        }}>
-          <ThemedView style={styles.stepContainer}>
-            <ThemedText>{person.name}</ThemedText>
-          </ThemedView>
-        </Pressable>
-      ))}
-    </ParallaxScrollView>
+      {selectedPerson && (
+        <ThemedView style={styles.subtitleContainer}>
+          <ThemedText type="title">Hello {selectedPerson?.name}</ThemedText>
+          <ThemedText>{song?.name}</ThemedText>
+          <Image
+            source={{ uri: song?.album?.images?.[0].url }}
+            style={styles.albumArt}
+          />
+        </ThemedView>
+      )}
+
+      {
+        songList.map((person) => (
+          <Pressable key={person.name} onPress={() => {
+            setSelectedPerson(person);
+          }}>
+            <ThemedView style={styles.stepContainer}>
+              <ThemedText>{person.name}</ThemedText>
+            </ThemedView>
+          </Pressable>
+        ))
+      }
+    </ParallaxScrollView >
   );
 }
 
@@ -152,4 +161,9 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+  albumArt: {
+    marginTop: 10,
+    height: 200,
+    width: 200,
+  }
 });
