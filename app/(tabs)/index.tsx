@@ -43,6 +43,7 @@ export default function HomeScreen() {
             padding: 8,
             marginTop: 8,
           }}
+          disabled={!id}
           onPress={() => {
             router.push({ pathname: "/SongDisplay", params: { fob_id: id } });
           }}
