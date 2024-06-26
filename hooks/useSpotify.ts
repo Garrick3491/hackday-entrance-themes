@@ -30,6 +30,7 @@ export default () => {
         }
       )
       .then(function (response) {
+        console.log(response.data.access_token)
         setToken(response.data.access_token);
       })
       .catch(function (err) {
@@ -37,12 +38,9 @@ export default () => {
       });
   };
 
-  const getSongForName = async (songName: string) => {
+  const getSongForName = async ({songName, token}) => {
     console.log("songName:%o", songName);
     console.log("token:%o", token);
-    if (!token) {
-      refreshToken();
-    }
     axios
       .get(
         `https://api.spotify.com/v1/search?q=track:${encodeURIComponent(
@@ -88,6 +86,7 @@ export default () => {
         return;
       })
       .catch(function (error) {
+        console.log(token)
         console.log(error);
       });
   };

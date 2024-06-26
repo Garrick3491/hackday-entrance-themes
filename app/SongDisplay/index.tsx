@@ -1,41 +1,64 @@
-import { Image, StyleSheet, Platform, Pressable, View } from "react-native";
+import { Image, StyleSheet, Platform, Pressable, View } from 'react-native';
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useEffect, useState, useRef } from "react";
-import { Audio } from "expo-av";
-import useSpotify from "@/hooks/useSpotify";
-import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams, router } from "expo-router";
-import moment from "moment";
+import { HelloWave } from '@/components/HelloWave';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import qs from 'qs';
+global.Buffer = require('buffer').Buffer;
+import { Audio } from 'expo-av';
+import { useLocalSearchParams } from "expo-router";
 
 export default function SongDisplay() {
   const songList = require("@/public/songs/songs.json");
-  const now = new Date();
-  const displayDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+  const [token, setToken] = useState(null);
+
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [song, setSong] = useState(null);
+  const audioRef = useRef(null);
+
+
+  const client_id = "d99c18fbd8354e78b92d5d46b09c103e";
+  const client_secret = "17a84693860e4e5790443a25d089b737";
+  useEffect(() => {
+    if (!token) {
+      axios
+        .post(
+          "https://accounts.spotify.com/api/token",
+          qs.stringify({
+            grant_type: "client_credentials",
+            json: true,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
+            },
+          }
+        )
+        .then(function (response) {
+          setToken(response.data.access_token);
+        })
+        .catch(function (err) {
+          console.log("err:%o", err);
+        });
+    }
+  }, []);
 
   const { fob_id } = useLocalSearchParams();
 
-  const [selectedPerson, setSelectedPerson] = useState(null);
-  const audioRef = useRef(null);
-
-  const { refreshToken, setSpotifySong, song } = useSpotify();
 
   useEffect(() => {
-    const foundUser = songList.find((person) => {
-      return person.id == fob_id;
-    });
-    if (!foundUser) {
-      router.push({ pathname: "/Create", params: { fob_id } });
-    }
-    setSelectedPerson(foundUser);
-    refreshToken(
-      "d99c18fbd8354e78b92d5d46b09c103e",
-      "17a84693860e4e5790443a25d089b737"
+    setSelectedPerson(
+      songList.find((person) => {
+        return person.id == fob_id;
+      })
     );
   }, []);
+
+  console.log(selectedPerson);
 
   const [sound, setSound] = useState();
 
@@ -54,13 +77,33 @@ export default function SongDisplay() {
       : undefined;
   }, [sound]);
 
+
   useEffect(() => {
-    if (selectedPerson) {
+    if (selectedPerson && token) {
       const id = selectedPerson?.song?.split("/").pop();
-      console.log("id:%o", id);
-      setSpotifySong(id);
+
+      axios
+        .get(`https://api.spotify.com/v1/tracks/${id}/`, {
+          params: {
+            fields:
+              "items(track(name,preview_url, artists(name),album(images)))",
+          },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(function (response) {
+          setSong(
+            response.data
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     }
-  }, [selectedPerson]);
+  }, [selectedPerson, token]);
 
   useEffect(() => {
     if (song) {
@@ -87,9 +130,6 @@ export default function SongDisplay() {
             source={{ uri: song?.album?.images?.[0].url }}
             style={styles.albumArt}
           />
-          <ThemedView style={styles.stepContainer}>
-            <ThemedText style={styles.time}>{displayDate}</ThemedText>
-          </ThemedView>
         </ThemedView>
       )}
 
@@ -137,10 +177,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 200,
     width: 200,
-  },
-  time: {
-    marginTop: 10,
-    fontSize: 20,
-    fontWeight: "bold",
   },
 });
