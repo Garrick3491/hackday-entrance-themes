@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import qs from "qs";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
@@ -8,6 +8,15 @@ export default () => {
   const [token, setToken] = useState(null);
   const [song, setSong] = useState(null);
   const [songList, setSongList] = useState([]);
+
+  useEffect(() => {
+    if (!token) {
+      refreshToken(
+        "d99c18fbd8354e78b92d5d46b09c103e",
+        "17a84693860e4e5790443a25d089b737"
+      );
+    }
+  }, [token]);
 
   //  const client_id = "d99c18fbd8354e78b92d5d46b09c103e";
   //  const client_secret = "17a84693860e4e5790443a25d089b737";
@@ -38,6 +47,13 @@ export default () => {
   };
 
   const getSongForName = async (songName) => {
+    if (!token) {
+      refreshToken(
+        "d99c18fbd8354e78b92d5d46b09c103e",
+        "17a84693860e4e5790443a25d089b737"
+      );
+    }
+
     axios
       .get(
         `https://api.spotify.com/v1/search?q=track:${encodeURIComponent(
@@ -66,6 +82,13 @@ export default () => {
   };
 
   const setSpotifySong = async (songId: string) => {
+    if (!token) {
+      refreshToken(
+        "d99c18fbd8354e78b92d5d46b09c103e",
+        "17a84693860e4e5790443a25d089b737"
+      );
+    }
+
     axios
       .get(`https://api.spotify.com/v1/tracks/${songId}/`, {
         params: {
