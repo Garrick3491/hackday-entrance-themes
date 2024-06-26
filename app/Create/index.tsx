@@ -36,7 +36,6 @@ export default function SongDisplay() {
   }, []);
 
   const saveFile = async (json) => {
-    console.log(json);
     FileSystem.writeAsStringAsync("/songs/songs.json", json).catch((error) => {
       console.log(error);
     });
@@ -50,8 +49,6 @@ export default function SongDisplay() {
         name: name,
         song: selectedSong.external_urls.spotify,
       });
-
-      console.log(json);
 
       saveFile(json.toString());
     }
