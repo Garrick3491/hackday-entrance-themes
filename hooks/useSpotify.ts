@@ -48,7 +48,6 @@ export default () => {
         },
       })
       .then(function (response) {
-        console.log(response.data);
         setSong(response.data);
 
         return;

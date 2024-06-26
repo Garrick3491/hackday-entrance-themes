@@ -25,19 +25,15 @@ export default function SongDisplay() {
   const [sound, setSound] = useState();
 
   async function playSound() {
-    console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync({ uri: song.preview_url });
-    console.log("sound:%o", sound);
     setSound(sound);
 
-    console.log("Playing Sound");
     await sound.playAsync();
   }
 
   useEffect(() => {
     return sound
       ? () => {
-          console.log("Unloading Sound");
           sound.unloadAsync();
         }
       : undefined;
