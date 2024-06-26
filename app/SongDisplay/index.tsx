@@ -9,9 +9,12 @@ import { Audio } from "expo-av";
 import useSpotify from "@/hooks/useSpotify";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
+import moment from 'moment'
 
 export default function SongDisplay() {
   const songList = require("@/assets/songs/songs.json");
+  const now=new Date()
+  const displayDate= moment().format('MMMM Do YYYY, h:mm:ss a');
 
   const { fob_id } = useLocalSearchParams();
 
@@ -84,6 +87,9 @@ export default function SongDisplay() {
             source={{ uri: song?.album?.images?.[0].url }}
             style={styles.albumArt}
           />
+          <ThemedView style={styles.stepContainer}>
+            <ThemedText style={styles.time}>{displayDate}</ThemedText>
+          </ThemedView>
         </ThemedView>
       )}
 
@@ -131,5 +137,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 200,
     width: 200,
+  },
+  time: {
+    marginTop: 10,
+    fontSize: 20,
+    fontWeight: 'bold'
   },
 });

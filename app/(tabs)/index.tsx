@@ -32,6 +32,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.stepContainer}>
         <TextInput
           placeholder="Enter your ID"
+          inputMode="numeric"
           onChangeText={(text) => {
             setId(text);
           }}
