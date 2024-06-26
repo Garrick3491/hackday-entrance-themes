@@ -17,12 +17,14 @@ import useSpotify from "@/hooks/useSpotify";
 import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import * as FileSystem from "expo-file-system";
+import usePeopleList from "@/hooks/usePeopleList";
 
 export default function SongDisplay() {
   const { fob_id } = useLocalSearchParams();
 
   const { refreshToken, getSongForName, songList } = useSpotify();
-
+  const { getPeople, setPeople } = usePeopleList();
+  const songListFromHook = getPeople();
   const [songName, setSongName] = useState();
   const [name, setName] = useState();
   const [selectedSong, setSelectedSong] = useState(null);
@@ -34,10 +36,14 @@ export default function SongDisplay() {
     );
   }, []);
 
-  const saveFile = async (json) => {
-    FileSystem.writeAsStringAsync("/songs/songs.json", json).catch((error) => {
-      console.log(error);
-    });
+  const savePeople = async (json) => {
+    setPeople(json);
+
+    console.log(json);
+
+    
+
+    router.push({ pathName: "/SongDisplay", params: { fob_id } });
   };
 
   useEffect(() => {
@@ -49,7 +55,7 @@ export default function SongDisplay() {
         song: selectedSong.external_urls.spotify,
       });
 
-      saveFile(json.toString());
+      savePeople(json);
     }
   }, [selectedSong]);
 

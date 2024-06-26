@@ -12,9 +12,12 @@ import { Audio } from "expo-av";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import useSpotify from "@/hooks/useSpotify";
+import usePeopleList from "@/hooks/usePeopleList";
 
 export default function SongDisplay() {
-  const songList = require("@/public/songs/songs.json");
+  const { getPeople } = usePeopleList();
+  const songList = getPeople();
+  console.log("songList:%o", songList);
   const { refreshToken, setSpotifySong, song } = useSpotify();
   const displayDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
