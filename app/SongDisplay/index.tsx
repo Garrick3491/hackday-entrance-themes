@@ -1,14 +1,105 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Pressable } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import qs from 'qs';
+global.Buffer = require('buffer').Buffer;
+import { Audio } from 'expo-av';
 
 export default function SongDisplay() {
-    const songList = require("@/assets/songs/songs.json");
-    const selectedSong = songList.find(song => song.id == 1);
-    console.log(selectedSong)
+  const songList = require("@/assets/songs/songs.json");
+  const [token, setToken] = useState(null);
+
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [song, setSong] = useState(null);
+  const audioRef = useRef(null);
+
+
+  const client_id = "d99c18fbd8354e78b92d5d46b09c103e";
+  const client_secret = "17a84693860e4e5790443a25d089b737";
+  useEffect(() => {
+    if (!token) {
+      axios
+        .post(
+          "https://accounts.spotify.com/api/token",
+          qs.stringify({
+            grant_type: "client_credentials",
+            json: true,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
+            },
+          }
+        )
+        .then(function (response) {
+          setToken(response.data.access_token);
+        })
+        .catch(function (err) {
+          console.log("err:%o", err);
+        });
+    }
+  }, []);
+
+  const [sound, setSound] = useState();
+
+  async function playSound() {
+    console.log('Loading Sound');
+    const { sound } = await Audio.Sound.createAsync({ uri: song.preview_url });
+    console.log('sound:%o', sound);
+    setSound(sound);
+
+    console.log('Playing Sound');
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+        console.log('Unloading Sound');
+        sound.unloadAsync();
+      }
+      : undefined;
+  }, [sound]);
+
+  useEffect(() => {
+    if (selectedPerson && token) {
+      const id = selectedPerson?.song?.split("/").pop();
+      console.log('id:%o', id);
+      axios
+        .get(`https://api.spotify.com/v1/tracks/${id}/`, {
+          params: {
+            fields:
+              "items(track(name,preview_url, artists(name),album(images)))",
+          },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(function (response) {
+          setSong(
+            response.data
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  }, [selectedPerson, token]);
+
+  useEffect(() => {
+    if (song) {
+      const play = async () => playSound();
+      play();
+    }
+  }, [song]);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,11 +110,20 @@ export default function SongDisplay() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-       <ThemedText type="title">Hello {selectedSong.name}</ThemedText>
+        {/* <ThemedText type="title">Hello {selectedSong?.name}</ThemedText> */}
       </ThemedView>
       <ThemedView style={styles.subtitleContainer}>
         <ThemedText>Entrance Theme: SONG INFORMATION</ThemedText>
       </ThemedView>
+      {songList.map((person) => (
+        <Pressable key={person.name} onPress={() => {
+          setSelectedPerson(person);
+        }}>
+          <ThemedView style={styles.stepContainer}>
+            <ThemedText>{person.name}</ThemedText>
+          </ThemedView>
+        </Pressable>
+      ))}
     </ParallaxScrollView>
   );
 }
@@ -51,5 +151,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
-},
+  },
 });
