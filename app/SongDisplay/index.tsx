@@ -1,12 +1,14 @@
-import { Image, StyleSheet, Platform, Pressable } from 'react-native';
+import { Image, StyleSheet, Platform } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { router } from 'expo-router';
 
-export default function HomeScreen() {
+export default function SongDisplay() {
+    const songList = require("@/assets/songs/songs.json");
+    const selectedSong = songList.find(song => song.id == 1);
+    console.log(selectedSong)
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -17,15 +19,10 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to the office!</ThemedText>
-        <HelloWave />
+       <ThemedText type="title">Hello {selectedSong.name}</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Pressable onPress={()=> {
-          router.push("/SongDisplay")
-        }}>
-      <ThemedText>Please scan your fob to play your entrance music!</ThemedText>
-      </Pressable>
+      <ThemedView style={styles.subtitleContainer}>
+        <ThemedText>Entrance Theme: SONG INFORMATION</ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -35,7 +32,14 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: "center",
     gap: 8,
+  },
+  subtitleContainer: {
+    flexDirection: "column",
+    alignItems: 'center',
+    justifyContent: "center",
+    marginTop: 20,
   },
   stepContainer: {
     gap: 8,
@@ -47,5 +51,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
-  },
+},
 });
