@@ -37,7 +37,7 @@ export default () => {
       });
   };
 
-  const getSongForName = async ({ songName, token }) => {
+  const getSongForName = async (songName) => {
     axios
       .get(
         `https://api.spotify.com/v1/search?q=track:${encodeURIComponent(

@@ -9,13 +9,13 @@ import axios from "axios";
 import qs from "qs";
 global.Buffer = require("buffer").Buffer;
 import { Audio } from "expo-av";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import useSpotify from "@/hooks/useSpotify";
 
 export default function SongDisplay() {
   const songList = require("@/public/songs/songs.json");
-  const { refreshToken, setSpotifySong, getSongForName, song } = useSpotify();
+  const { refreshToken, setSpotifySong, song } = useSpotify();
   const displayDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -30,11 +30,12 @@ export default function SongDisplay() {
   const { fob_id } = useLocalSearchParams();
 
   useEffect(() => {
-    setSelectedPerson(
-      songList.find((person) => {
-        return person.id == fob_id;
-      })
-    );
+    let person = songList.find((person) => person.id === fob_id);
+
+    if (!person) {
+      router.push({ pathname: "/Create", params: { fob_id } });
+    }
+    setSelectedPerson(person);
   }, []);
 
   const [sound, setSound] = useState();

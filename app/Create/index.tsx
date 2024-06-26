@@ -21,8 +21,7 @@ import * as FileSystem from "expo-file-system";
 export default function SongDisplay() {
   const { fob_id } = useLocalSearchParams();
 
-  const { refreshToken, setSpotifySong, getSongForName, songList } =
-    useSpotify();
+  const { refreshToken, getSongForName, songList } = useSpotify();
 
   const [songName, setSongName] = useState();
   const [name, setName] = useState();
@@ -74,6 +73,7 @@ export default function SongDisplay() {
         <TextInput
           placeholder="Enter your song name"
           onChangeText={(text) => {
+            console.log("text:%o", text);
             setSongName(text);
           }}
         />
@@ -86,6 +86,8 @@ export default function SongDisplay() {
           }}
           disabled={!songName}
           onPress={() => {
+            console.log("songName:%o", songName);
+            console.log("songName:%o", songName);
             getSongForName(songName);
             //router.push({ pathname: "/SongDisplay", params: { fob_id: id } });
           }}
