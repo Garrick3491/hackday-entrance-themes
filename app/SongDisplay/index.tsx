@@ -15,9 +15,7 @@ import useSpotify from "@/hooks/useSpotify";
 import usePeopleList from "@/hooks/usePeopleList";
 
 export default function SongDisplay() {
-  const { getPeople } = usePeopleList();
-  const songList = getPeople();
-  console.log("songList:%o", songList);
+  const { getPersonForId } = usePeopleList();
   const { refreshToken, setSpotifySong, song } = useSpotify();
   const displayDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
@@ -33,18 +31,17 @@ export default function SongDisplay() {
   const { fob_id } = useLocalSearchParams();
 
   useEffect(() => {
-    let person = songList.find((person) => person.id === fob_id);
-
-    if (!person) {
-      router.push({ pathname: "/Create", params: { fob_id } });
-    }
+    let person = getPersonForId(fob_id);
     setSelectedPerson(person);
   }, []);
+
+  console.log("person", selectedPerson);
 
   const [sound, setSound] = useState();
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync({ uri: song.preview_url });
+    await sound.stopAsync();
     setSound(sound);
 
     await sound.playAsync();
@@ -63,6 +60,8 @@ export default function SongDisplay() {
       const id = selectedPerson?.song?.split("/").pop();
 
       setSpotifySong(id);
+
+      console.log("song", song);
     }
   }, [selectedPerson]);
 

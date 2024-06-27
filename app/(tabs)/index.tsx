@@ -12,9 +12,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
 import { useState } from "react";
+import usePeopleList from "@/hooks/usePeopleList";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function HomeScreen() {
   const [id, setId] = useState(null);
+  const { getPersonForId } = usePeopleList();
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -46,7 +49,11 @@ export default function HomeScreen() {
           }}
           disabled={!id}
           onPress={() => {
-            router.push({ pathname: "/SongDisplay", params: { fob_id: id } });
+            if (getPersonForId(id)) {
+              router.push({ pathname: "/SongDisplay", params: { fob_id: id } });
+            } else {
+              router.push({ pathname: "/Create", params: { fob_id: id } });
+            }
           }}
         >
           <ThemedText>Submit Fob ID</ThemedText>
