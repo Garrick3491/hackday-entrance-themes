@@ -22,20 +22,16 @@ export default function SongDisplay() {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const audioRef = useRef(null);
 
-  const client_id = "d99c18fbd8354e78b92d5d46b09c103e";
-  const client_secret = "17a84693860e4e5790443a25d089b737";
-  useEffect(() => {
-    refreshToken(client_id, client_secret);
-  }, []);
-
   const { fob_id } = useLocalSearchParams();
 
   useEffect(() => {
+    refreshToken(
+      "d99c18fbd8354e78b92d5d46b09c103e",
+      "17a84693860e4e5790443a25d089b737"
+    );
     let person = getPersonForId(fob_id);
     setSelectedPerson(person);
   }, []);
-
-  console.log("person", selectedPerson);
 
   const [sound, setSound] = useState();
 
@@ -60,8 +56,6 @@ export default function SongDisplay() {
       const id = selectedPerson?.song?.split("/").pop();
 
       setSpotifySong(id);
-
-      console.log("song", song);
     }
   }, [selectedPerson]);
 
@@ -71,7 +65,6 @@ export default function SongDisplay() {
       play();
     }
   }, [song]);
-  console.log("song:%o", song);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}

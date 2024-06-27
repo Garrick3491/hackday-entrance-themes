@@ -39,11 +39,7 @@ export default function SongDisplay() {
   const savePeople = async (json) => {
     setPeople(json);
 
-    console.log(json);
-
-    
-
-    router.push({ pathName: "/SongDisplay", params: { fob_id } });
+    router.push({ pathname: "/SongDisplay", params: { fob_id } });
   };
 
   useEffect(() => {
@@ -79,7 +75,6 @@ export default function SongDisplay() {
         <TextInput
           placeholder="Enter your song name"
           onChangeText={(text) => {
-            console.log("text:%o", text);
             setSongName(text);
           }}
         />
@@ -92,8 +87,6 @@ export default function SongDisplay() {
           }}
           disabled={!songName}
           onPress={() => {
-            console.log("songName:%o", songName);
-            console.log("songName:%o", songName);
             getSongForName(songName);
             //router.push({ pathname: "/SongDisplay", params: { fob_id: id } });
           }}

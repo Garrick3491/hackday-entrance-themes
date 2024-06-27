@@ -9,15 +9,6 @@ export default () => {
   const [song, setSong] = useState(null);
   const [songList, setSongList] = useState([]);
 
-  useEffect(() => {
-    if (!token) {
-      refreshToken(
-        "d99c18fbd8354e78b92d5d46b09c103e",
-        "17a84693860e4e5790443a25d089b737"
-      );
-    }
-  }, []);
-
   //  const client_id = "d99c18fbd8354e78b92d5d46b09c103e";
   //  const client_secret = "17a84693860e4e5790443a25d089b737";
 
@@ -47,15 +38,6 @@ export default () => {
   };
 
   const getSongForName = async (songName) => {
-    if (!token) {
-      await refreshToken(
-        "d99c18fbd8354e78b92d5d46b09c103e",
-        "17a84693860e4e5790443a25d089b737"
-      );
-    }
-
-    console.log("token", token);
-
     axios
       .get(
         `https://api.spotify.com/v1/search?q=track:${encodeURIComponent(
@@ -80,20 +62,10 @@ export default () => {
       })
       .catch(function (error) {
         console.log(error);
-        getSongForName(songName);
       });
   };
 
   const setSpotifySong = async (songId: string) => {
-    if (!token) {
-      await refreshToken(
-        "d99c18fbd8354e78b92d5d46b09c103e",
-        "17a84693860e4e5790443a25d089b737"
-      );
-    }
-
-    console.log("token", token);
-
     axios
       .get(`https://api.spotify.com/v1/tracks/${songId}/`, {
         params: {
@@ -113,7 +85,6 @@ export default () => {
       .catch(function (error) {
         console.log("token", token);
         console.log(error);
-        setSpotifySong(songId);
       });
   };
 
@@ -123,5 +94,6 @@ export default () => {
     song,
     getSongForName,
     songList,
+    token,
   };
 };

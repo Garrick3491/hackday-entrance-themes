@@ -11,13 +11,21 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import usePeopleList from "@/hooks/usePeopleList";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import useSpotify from "@/hooks/useSpotify";
 
 export default function HomeScreen() {
   const [id, setId] = useState(null);
   const { getPersonForId } = usePeopleList();
+  const { refreshToken, token } = useSpotify();
+
+  useEffect(() => {
+    refreshToken(
+      "d99c18fbd8354e78b92d5d46b09c103e",
+      "17a84693860e4e5790443a25d089b737"
+    );
+  }, []);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
